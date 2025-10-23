@@ -11,29 +11,39 @@ import cv2
 # ==========================
 st.set_page_config(page_title="Smart Vision AI", page_icon="🧠", layout="wide")
 
-# Custom CSS
+# Custom CSS (tema coklat muda lembut)
 st.markdown("""
     <style>
     .main {
-        background: linear-gradient(135deg, #FBEAFF 0%, #E3FDFD 100%);
+        background: linear-gradient(135deg, #F5E6CA 0%, #FAF3E0 100%);
         padding: 1rem 2rem;
-    }
-    h1 {
-        color: #7A1CAC;
-        text-align: center;
         font-family: 'Poppins', sans-serif;
+    }
+
+    h1 {
+        color: #5A3E2B;
+        text-align: center;
         font-weight: 700;
+        margin-bottom: 1.2rem;
     }
+
     section[data-testid="stSidebar"] {
-        background-color: #F6EFFF;
-        color: black !important;
+        background-color: #EBD9C7;
+        color: #3B2F2F !important;
+        border-right: 3px solid #CBB89D;
     }
+
+    h2, h3, .stMarkdown {
+        color: #4B3621;
+    }
+
     .stImage {
         border-radius: 15px;
-        box-shadow: 0px 4px 10px rgba(122, 28, 172, 0.2);
+        box-shadow: 0px 4px 10px rgba(90, 62, 43, 0.2);
     }
+
     div.stButton > button {
-        background-color: #7A1CAC;
+        background-color: #8B5E3C;
         color: white;
         border-radius: 10px;
         height: 3em;
@@ -41,20 +51,34 @@ st.markdown("""
         font-weight: bold;
         border: none;
     }
+
     div.stButton > button:hover {
-        background-color: #9C27B0;
+        background-color: #A47148;
         color: #fff;
     }
+
     .result-box {
-        background-color: #ffffffcc;
-        padding: 1rem;
-        border-radius: 12px;
+        background-color: #FFF7EC;
+        padding: 1.2rem;
+        border-radius: 15px;
         text-align: center;
         font-size: 18px;
         font-weight: 600;
-        color: #4B0082;
-        box-shadow: 0 0 10px rgba(100, 0, 150, 0.1);
+        color: #4E342E;
+        box-shadow: 0 0 15px rgba(139, 94, 60, 0.1);
     }
+
+    /* Animasi awan dan karakter */
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+
+    .float {
+        animation: float 3s ease-in-out infinite;
+    }
+
     footer {visibility: hidden;}
     </style>
 """, unsafe_allow_html=True)
@@ -64,34 +88,42 @@ st.markdown("""
 # ==========================
 @st.cache_resource
 def load_models():
-    yolo_model = YOLO("model/best.pt")  # Deteksi objek Alpaca
-    classifier = tf.keras.models.load_model("model/classifier_model.h5")  # Klasifikasi furniture
+    yolo_model = YOLO("model/best.pt")  # Model deteksi Alpaca
+    classifier = tf.keras.models.load_model("model/classifier_model.h5")  # Model klasifikasi furniture
     return yolo_model, classifier
 
 yolo_model, classifier = load_models()
-
-# Cek input shape dari model klasifikasi
 input_shape = classifier.input_shape[1:3]  # (height, width)
 
 # ==========================
 # UI
 # ==========================
-st.title("Alpaca Detection and Furniture Classification")
+st.title("🦙 Smart Vision: Alpaca Detection & Furniture Classification")
 
 with st.sidebar:
-    st.header("✨ Pengaturan Mode")
+    st.header("⚙️ Pengaturan Mode")
     menu = st.selectbox("Pilih Mode:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
     st.markdown("---")
     st.markdown(
         """
-        <div style="color:black;">
-            💡 <i>Unggah gambar Alpaca / Non-Alpaca untuk deteksi, atau furniture untuk klasifikasi!</i>
+        <div style="color:#3B2F2F;">
+            💡 <i>Unggah gambar Alpaca/Non-Alpaca untuk deteksi objek, atau furniture untuk klasifikasi.</i>
         </div>
         """,
         unsafe_allow_html=True
     )
+    st.markdown("---")
+    st.write("📋 Deskripsi Singkat:")
+    st.markdown(
+        """
+        <p style="font-size:14px;">
+        Aplikasi ini dapat mendeteksi keberadaan <b>Alpaca</b> dalam gambar menggunakan model <i>YOLO</i>, 
+        dan juga mengklasifikasikan jenis <b>furniture</b> (chair, table, nightstand, sofa, bed) menggunakan model deep learning berbasis CNN.
+        </p>
+        """, unsafe_allow_html=True
+    )
 
-uploaded_file = st.file_uploader("Klik! Unggah Gambar Disini", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("📂 Klik atau drag file ke sini", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
     img = Image.open(uploaded_file)
@@ -112,7 +144,6 @@ if uploaded_file is not None:
         elif menu == "Klasifikasi Gambar":
             st.subheader("📊 Hasil Klasifikasi")
             with st.spinner("Sedang menganalisis gambar... 🧠"):
-                # Resize sesuai ukuran input model
                 img_resized = img.resize(input_shape)
                 img_array = image.img_to_array(img_resized)
                 img_array = np.expand_dims(img_array, axis=0)
@@ -122,13 +153,12 @@ if uploaded_file is not None:
                 class_index = np.argmax(prediction)
                 probability = np.max(prediction)
 
-            # Label sesuai dataset furniture
             labels = ["Chair", "Table", "Nightstand", "Sofa", "Bed"]
 
             st.markdown(f"""
-            <div class="result-box">
-                <p><b>Prediksi:</b> {labels[class_index]}</p>
-                <p><b>Probabilitas:</b> {probability:.2%}</p>
+            <div class="result-box float">
+                <p>🪑 <b>Prediksi:</b> {labels[class_index]}</p>
+                <p>📈 <b>Probabilitas:</b> {probability:.2%}</p>
             </div>
             """, unsafe_allow_html=True)
 
@@ -137,7 +167,7 @@ if uploaded_file is not None:
 # ==========================
 st.markdown("""
 <hr>
-<div style="text-align:center; font-size:14px; color:gray;">
-by <b>@naylarhmdn</b> | Alpaca Vision Project 🦙
+<div style="text-align:center; font-size:14px; color:#5A3E2B;">
+by <b>@naylarhmdn</b> | Smart Vision Project 🤎🦙
 </div>
 """, unsafe_allow_html=True)
