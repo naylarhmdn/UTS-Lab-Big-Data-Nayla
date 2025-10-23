@@ -76,7 +76,7 @@ input_shape = classifier.input_shape[1:3]  # (height, width)
 # ==========================
 # UI
 # ==========================
-st.title("🦙 Alpaca & Non-Alpaca Vision Dashboard")
+st.title("Smart Vision AI: Alpaca Detection and Furniture Classification")
 
 with st.sidebar:
     st.header("✨ Pengaturan Mode")
