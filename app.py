@@ -9,7 +9,7 @@ import cv2
 # ==========================
 # CONFIG & STYLE
 # ==========================
-st.set_page_config(page_title="🦙 Alpaca Vision", page_icon="🧠", layout="wide")
+st.set_page_config(page_title="Smart Vision AI", page_icon="🧠", layout="wide")
 
 # Custom CSS
 st.markdown("""
@@ -76,7 +76,7 @@ input_shape = classifier.input_shape[1:3]  # (height, width)
 # ==========================
 # UI
 # ==========================
-st.title("Smart Vision AI: Alpaca Detection and Furniture Classification")
+st.title("Alpaca Detection and Furniture Classification")
 
 with st.sidebar:
     st.header("✨ Pengaturan Mode")
