@@ -19,7 +19,7 @@ with st.sidebar:
     menu = st.selectbox("Pilih Mode:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
 
     st.markdown("---")
-    theme = st.radio("🎨 Pilih Tampilan:", ["Terang", "Gelap"])
+    theme = st.radio("Pilih Tampilan:", ["Terang", "Gelap"])
     st.markdown("---")
 
     st.markdown(
@@ -41,16 +41,16 @@ with st.sidebar:
 # CSS DYNAMIC (berdasarkan tema)
 # ==========================
 if theme == "Terang":
-    main_bg = "#FAF3E0"
+    main_bg = "#E4C0A8"
     main_grad = "linear-gradient(135deg, #FAF3E0 0%, #F5E6CA 100%)"
-    text_color = "#3B2F2F"
+    text_color = "#804C22"
     sidebar_bg = "linear-gradient(180deg, #3B2F2F 0%, #4E3B31 100%)"
     button_bg = "#8B5E3C"
     hover_bg = "#A47148"
 else:
-    main_bg = "#2C1810"
+    main_bg = "#804C22"
     main_grad = "linear-gradient(135deg, #2C1810 0%, #3E2723 100%)"
-    text_color = "#F5E6CA"
+    text_color = "#E4C0A8"
     sidebar_bg = "linear-gradient(180deg, #1B0F0A 0%, #2E1A12 100%)"
     button_bg = "#C49A6C"
     hover_bg = "#D7B48B"
@@ -150,19 +150,19 @@ if uploaded_file is not None:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("🖼️ Gambar yang Diupload")
+        st.subheader("Gambar yang Diupload")
         st.image(img, use_container_width=True)
 
     with col2:
         if menu == "Deteksi Objek (YOLO)":
-            st.subheader("🔍 Hasil Deteksi Objek")
+            st.subheader("Hasil Deteksi Objek")
             with st.spinner("Sedang mendeteksi objek... ⏳"):
                 results = yolo_model(img)
                 result_img = results[0].plot()
             st.image(result_img, caption="Output Deteksi", use_container_width=True)
 
         elif menu == "Klasifikasi Gambar":
-            st.subheader("📊 Hasil Klasifikasi")
+            st.subheader("Hasil Klasifikasi")
             with st.spinner("Sedang menganalisis gambar... 🧠"):
                 img_resized = img.resize(input_shape)
                 img_array = image.img_to_array(img_resized)
@@ -175,8 +175,8 @@ if uploaded_file is not None:
 
             st.markdown(f"""
             <div class="result-box float">
-                <p>🪑 <b>Prediksi:</b> {labels[class_index]}</p>
-                <p>📈 <b>Probabilitas:</b> {probability:.2%}</p>
+                <p><b>Prediksi:</b> {labels[class_index]}</p>
+                <p><b>Probabilitas:</b> {probability:.2%}</p>
             </div>
             """, unsafe_allow_html=True)
 
