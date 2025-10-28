@@ -1,94 +1,182 @@
 import streamlit as st
+from ultralytics import YOLO
+import tensorflow as tf
+from tensorflow.keras.preprocessing import image
+import numpy as np
 from PIL import Image
+import cv2
 
 # ==========================
 # CONFIG & STYLE
 # ==========================
-st.set_page_config(page_title="Smart Vision: Alpaca Detection", page_icon="🐪", layout="wide")
+st.set_page_config(page_title="Smart Vision AI", page_icon="🧠", layout="wide")
 
-# Custom CSS (warna & style)
+# Custom CSS (main terang, sidebar coklat tua)
 st.markdown("""
     <style>
-    /* --- Warna keseluruhan halaman --- */
+    /* MAIN AREA */
     .main {
-        background-color: #f7e7d4; /* coklat muda / krem */
-        color: #2b1d12; /* teks gelap tua */
+        background: linear-gradient(135deg, #FAF3E0 0%, #F5E6CA 100%);
+        padding: 1rem 2rem;
         font-family: 'Poppins', sans-serif;
+        color: #3B2F2F;
     }
 
-    /* --- Sidebar --- */
-    [data-testid="stSidebar"] {
-        background-color: #5c4033; /* coklat tua */
-        color: #f3e5d8;
+    h1 {
+        color: #4B3621;
+        text-align: center;
+        font-weight: 700;
+        margin-bottom: 1.2rem;
     }
 
-    [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3, [data-testid="stSidebar"] p, [data-testid="stSidebar"] label {
-        color: #f3e5d8 !important;
+    h2, h3, .stMarkdown {
+        color: #4E342E;
     }
 
-    /* --- Upload area --- */
-    .stFileUploader label {
-        color: #2b1d12 !important;
-        font-weight: 500;
+    /* SIDEBAR */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #3B2F2F 0%, #4E3B31 100%);
+        color: #FAF3E0 !important;
+        border-right: 3px solid #CBB89D;
     }
 
-    /* --- Heading utama --- */
-    h1, h2, h3 {
-        color: #2b1d12;
+    section[data-testid="stSidebar"] h1, 
+    section[data-testid="stSidebar"] h2, 
+    section[data-testid="stSidebar"] h3, 
+    section[data-testid="stSidebar"] p {
+        color: #FAF3E0 !important;
     }
 
-    /* --- Box konten utama --- */
-    .block-container {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
+    .stImage {
+        border-radius: 15px;
+        box-shadow: 0px 4px 10px rgba(90, 62, 43, 0.15);
     }
 
-    /* --- Tombol --- */
-    .stButton>button {
-        background-color: #5c4033;
+    div.stButton > button {
+        background-color: #8B5E3C;
         color: white;
         border-radius: 10px;
+        height: 3em;
+        width: 100%;
+        font-weight: bold;
         border: none;
-        padding: 0.5rem 1rem;
     }
 
-    .stButton>button:hover {
-        background-color: #7b5544;
+    div.stButton > button:hover {
+        background-color: #A47148;
+        color: #fff;
     }
+
+    .result-box {
+        background-color: #FFF7EC;
+        padding: 1.2rem;
+        border-radius: 15px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: 600;
+        color: #4B3621;
+        box-shadow: 0 0 15px rgba(139, 94, 60, 0.1);
+    }
+
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+
+    .float {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    footer {visibility: hidden;}
     </style>
 """, unsafe_allow_html=True)
 
+# ==========================
+# LOAD MODELS
+# ==========================
+@st.cache_resource
+def load_models():
+    yolo_model = YOLO("model/best.pt")  # Model deteksi Alpaca
+    classifier = tf.keras.models.load_model("model/classifier_model.h5")  # Model klasifikasi furniture
+    return yolo_model, classifier
+
+yolo_model, classifier = load_models()
+input_shape = classifier.input_shape[1:3]
 
 # ==========================
-# SIDEBAR
+# UI
 # ==========================
-st.sidebar.title("⚙️ Pengaturan Mode")
-mode = st.sidebar.radio("Pilih mode:", ["Deteksi Objek", "Klasifikasi Gambar"])
+st.title("🦙 Smart Vision: Alpaca Detection & Furniture Classification")
 
-st.sidebar.markdown("🧩 **Unggah gambar Alpaca/Non-Alpaca** untuk deteksi objek, atau furniture untuk klasifikasi.")
-theme = st.sidebar.radio("Pilih tampilan:", ["Terang", "Gelap"])
+with st.sidebar:
+    st.header("⚙️ Pengaturan Mode")
+    menu = st.selectbox("Pilih Mode:", ["Deteksi Objek (YOLO)", "Klasifikasi Gambar"])
+    st.markdown("---")
+    st.markdown(
+        """
+        <div style="color:#FAF3E0;">
+            💡 <i>Unggah gambar Alpaca/Non-Alpaca untuk deteksi objek, atau furniture untuk klasifikasi.</i>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+    st.markdown("---")
+    st.write("📋 Deskripsi Singkat:")
+    st.markdown(
+        """
+        <p style="font-size:14px; color:#FAF3E0;">
+        Aplikasi ini dapat mendeteksi keberadaan <b>Alpaca</b> dalam gambar menggunakan model <i>YOLO</i>, 
+        dan juga mengklasifikasikan jenis <b>furniture</b> (chair, table, nightstand, sofa, bed) menggunakan model deep learning berbasis CNN.
+        </p>
+        """, unsafe_allow_html=True
+    )
 
-st.sidebar.markdown("""
-**Deskripsi Singkat**  
-Aplikasi ini dapat mendeteksi keberadaan *Alpaca* dalam gambar menggunakan model YOLO,  
-dan mengklasifikasikan jenis furniture (*chair, table, lamp, bed*)  
-menggunakan model berbasis CNN.
-""")
-
-
-# ==========================
-# KONTEN UTAMA
-# ==========================
-st.title("🐪 Smart Vision: Alpaca Detection & Furniture Classification")
-
-st.markdown("### 📂 Klik atau drag file ke sini")
-uploaded_file = st.file_uploader("Drag and drop file here", type=["jpg", "png", "jpeg"])
+uploaded_file = st.file_uploader("📂 Klik atau drag file ke sini", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    st.image(image, caption="Gambar yang diunggah", use_container_width=True)
-else:
-    st.info("Silakan unggah gambar untuk memulai analisis.")
+    img = Image.open(uploaded_file)
+    col1, col2 = st.columns(2)
 
-st.markdown("---")
-st.markdown("by **@naylarhmdn** | Smart Vision Project ☕🐫")
+    with col1:
+        st.subheader("🖼️ Gambar yang Diupload")
+        st.image(img, width='stretch')
+
+    with col2:
+        if menu == "Deteksi Objek (YOLO)":
+            st.subheader("🔍 Hasil Deteksi Objek")
+            with st.spinner("Sedang mendeteksi objek... ⏳"):
+                results = yolo_model(img)
+                result_img = results[0].plot()
+            st.image(result_img, caption="Output Deteksi", width='stretch')
+
+        elif menu == "Klasifikasi Gambar":
+            st.subheader("📊 Hasil Klasifikasi")
+            with st.spinner("Sedang menganalisis gambar... 🧠"):
+                img_resized = img.resize(input_shape)
+                img_array = image.img_to_array(img_resized)
+                img_array = np.expand_dims(img_array, axis=0)
+                img_array = img_array / 255.0
+
+                prediction = classifier.predict(img_array)
+                class_index = np.argmax(prediction)
+                probability = np.max(prediction)
+
+            labels = ["Chair", "Table", "Nightstand", "Sofa", "Bed"]
+
+            st.markdown(f"""
+            <div class="result-box float">
+                <p>🪑 <b>Prediksi:</b> {labels[class_index]}</p>
+                <p>📈 <b>Probabilitas:</b> {probability:.2%}</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+# ==========================
+# FOOTER
+# ==========================
+st.markdown("""
+<hr>
+<div style="text-align:center; font-size:14px; color:#4B3621;">
+by <b>@naylarhmdn</b> | Smart Vision Project ☕🦙
+</div>
+""", unsafe_allow_html=True)
