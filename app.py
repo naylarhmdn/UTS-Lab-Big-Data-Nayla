@@ -41,19 +41,23 @@ with st.sidebar:
 # CSS DYNAMIC (berdasarkan tema)
 # ==========================
 if theme == "Terang":
-    main_bg = "#E4C0A8"
-    main_grad = "linear-gradient(135deg, #FAF3E0 0%, #F5E6CA 100%)"
-    text_color = "#804C22"
-    sidebar_bg = "linear-gradient(180deg, #3B2F2F 0%, #4E3B31 100%)"
+    main_grad = "linear-gradient(135deg, #FFF7EC 0%, #F5E6CA 100%)"
+    text_color = "#3B2F2F"          # teks utama gelap
+    sidebar_bg = "linear-gradient(180deg, #5C4033 0%, #4E3B31 100%)"
+    sidebar_text = "#FAF3E0"
     button_bg = "#8B5E3C"
     hover_bg = "#A47148"
+    result_bg = "#FFF2E0"
+    result_text = "#4B3621"
 else:
-    main_bg = "#804C22"
     main_grad = "linear-gradient(135deg, #2C1810 0%, #3E2723 100%)"
-    text_color = "#E4C0A8"
+    text_color = "#FAF3E0"          # teks utama terang
     sidebar_bg = "linear-gradient(180deg, #1B0F0A 0%, #2E1A12 100%)"
+    sidebar_text = "#EEDDC2"
     button_bg = "#C49A6C"
     hover_bg = "#D7B48B"
+    result_bg = "#4E342E"
+    result_text = "#FAF3E0"
 
 st.markdown(f"""
     <style>
@@ -64,32 +68,34 @@ st.markdown(f"""
         font-family: 'Poppins', sans-serif;
         color: {text_color};
     }}
+    h1, h2, h3, p, label, div, span {{
+        color: {text_color} !important;
+    }}
     h1 {{
-        color: {text_color};
         text-align: center;
         font-weight: 700;
         margin-bottom: 1.2rem;
     }}
-    h2, h3, .stMarkdown {{
-        color: {text_color};
-    }}
+
     /* SIDEBAR */
     section[data-testid="stSidebar"] {{
         background: {sidebar_bg};
-        color: #FAF3E0 !important;
+        color: {sidebar_text} !important;
         border-right: 3px solid #CBB89D;
     }}
     section[data-testid="stSidebar"] h1, 
     section[data-testid="stSidebar"] h2, 
     section[data-testid="stSidebar"] h3, 
     section[data-testid="stSidebar"] p {{
-        color: #FAF3E0 !important;
+        color: {sidebar_text} !important;
     }}
+
     /* Upload area */
     .stFileUploader label {{
         color: {text_color} !important;
         font-weight: 500;
     }}
+
     /* Tombol */
     div.stButton > button {{
         background-color: {button_bg};
@@ -104,16 +110,19 @@ st.markdown(f"""
         background-color: {hover_bg};
         color: #fff;
     }}
+
+    /* Box hasil */
     .result-box {{
-        background-color: #FFF7EC;
+        background-color: {result_bg};
         padding: 1.2rem;
         border-radius: 15px;
         text-align: center;
         font-size: 18px;
         font-weight: 600;
-        color: #4B3621;
-        box-shadow: 0 0 15px rgba(139, 94, 60, 0.1);
+        color: {result_text};
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }}
+
     @keyframes float {{
         0% {{ transform: translateY(0px); }}
         50% {{ transform: translateY(-10px); }}
@@ -122,6 +131,7 @@ st.markdown(f"""
     .float {{
         animation: float 3s ease-in-out infinite;
     }}
+
     footer {{visibility: hidden;}}
     </style>
 """, unsafe_allow_html=True)
@@ -150,19 +160,19 @@ if uploaded_file is not None:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("Gambar yang Diupload")
+        st.subheader("🖼️ Gambar yang Diupload")
         st.image(img, use_container_width=True)
 
     with col2:
         if menu == "Deteksi Objek (YOLO)":
-            st.subheader("Hasil Deteksi Objek")
+            st.subheader("🔍 Hasil Deteksi Objek")
             with st.spinner("Sedang mendeteksi objek... ⏳"):
                 results = yolo_model(img)
                 result_img = results[0].plot()
             st.image(result_img, caption="Output Deteksi", use_container_width=True)
 
         elif menu == "Klasifikasi Gambar":
-            st.subheader("Hasil Klasifikasi")
+            st.subheader("📊 Hasil Klasifikasi")
             with st.spinner("Sedang menganalisis gambar... 🧠"):
                 img_resized = img.resize(input_shape)
                 img_array = image.img_to_array(img_resized)
