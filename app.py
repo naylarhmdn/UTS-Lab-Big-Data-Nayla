@@ -11,9 +11,10 @@ import cv2
 # ==========================
 st.set_page_config(page_title="Smart Vision AI", page_icon="🧠", layout="wide")
 
-# Custom CSS (tema terang dengan teks coklat tua elegan)
+# Custom CSS (main terang, sidebar coklat tua)
 st.markdown("""
     <style>
+    /* MAIN AREA */
     .main {
         background: linear-gradient(135deg, #FAF3E0 0%, #F5E6CA 100%);
         padding: 1rem 2rem;
@@ -28,14 +29,22 @@ st.markdown("""
         margin-bottom: 1.2rem;
     }
 
+    h2, h3, .stMarkdown {
+        color: #4E342E;
+    }
+
+    /* SIDEBAR */
     section[data-testid="stSidebar"] {
-        background-color: #EBD9C7;
-        color: #3B2F2F !important;
+        background: linear-gradient(180deg, #3B2F2F 0%, #4E3B31 100%);
+        color: #FAF3E0 !important;
         border-right: 3px solid #CBB89D;
     }
 
-    h2, h3, .stMarkdown {
-        color: #4E342E;
+    section[data-testid="stSidebar"] h1, 
+    section[data-testid="stSidebar"] h2, 
+    section[data-testid="stSidebar"] h3, 
+    section[data-testid="stSidebar"] p {
+        color: #FAF3E0 !important;
     }
 
     .stImage {
@@ -93,7 +102,7 @@ def load_models():
     return yolo_model, classifier
 
 yolo_model, classifier = load_models()
-input_shape = classifier.input_shape[1:3]  # (height, width)
+input_shape = classifier.input_shape[1:3]
 
 # ==========================
 # UI
@@ -106,7 +115,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown(
         """
-        <div style="color:#3B2F2F;">
+        <div style="color:#FAF3E0;">
             💡 <i>Unggah gambar Alpaca/Non-Alpaca untuk deteksi objek, atau furniture untuk klasifikasi.</i>
         </div>
         """,
@@ -116,7 +125,7 @@ with st.sidebar:
     st.write("📋 Deskripsi Singkat:")
     st.markdown(
         """
-        <p style="font-size:14px; color:#3B2F2F;">
+        <p style="font-size:14px; color:#FAF3E0;">
         Aplikasi ini dapat mendeteksi keberadaan <b>Alpaca</b> dalam gambar menggunakan model <i>YOLO</i>, 
         dan juga mengklasifikasikan jenis <b>furniture</b> (chair, table, nightstand, sofa, bed) menggunakan model deep learning berbasis CNN.
         </p>
