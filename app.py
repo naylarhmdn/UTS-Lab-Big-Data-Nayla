@@ -11,39 +11,39 @@ import cv2
 # ==========================
 st.set_page_config(page_title="Smart Vision AI", page_icon="🧠", layout="wide")
 
-# Custom CSS (tema coklat muda lembut)
+# Custom CSS (tema coklat tua elegan)
 st.markdown("""
     <style>
     .main {
-        background: linear-gradient(135deg, #F5E6CA 0%, #FAF3E0 100%);
+        background: linear-gradient(135deg, #3B2F2F 0%, #4E3B31 100%);
         padding: 1rem 2rem;
         font-family: 'Poppins', sans-serif;
     }
 
     h1 {
-        color: #5A3E2B;
+        color: #F5E6CA;
         text-align: center;
         font-weight: 700;
         margin-bottom: 1.2rem;
     }
 
     section[data-testid="stSidebar"] {
-        background-color: #EBD9C7;
-        color: #3B2F2F !important;
+        background-color: #5A3E2B;
+        color: #FAF3E0 !important;
         border-right: 3px solid #CBB89D;
     }
 
     h2, h3, .stMarkdown {
-        color: #4B3621;
+        color: #F5E6CA;
     }
 
     .stImage {
         border-radius: 15px;
-        box-shadow: 0px 4px 10px rgba(90, 62, 43, 0.2);
+        box-shadow: 0px 4px 10px rgba(250, 243, 224, 0.3);
     }
 
     div.stButton > button {
-        background-color: #8B5E3C;
+        background-color: #A47148;
         color: white;
         border-radius: 10px;
         height: 3em;
@@ -53,22 +53,21 @@ st.markdown("""
     }
 
     div.stButton > button:hover {
-        background-color: #A47148;
+        background-color: #C18E60;
         color: #fff;
     }
 
     .result-box {
-        background-color: #FFF7EC;
+        background-color: #5A3E2B;
         padding: 1.2rem;
         border-radius: 15px;
         text-align: center;
         font-size: 18px;
         font-weight: 600;
-        color: #4E342E;
-        box-shadow: 0 0 15px rgba(139, 94, 60, 0.1);
+        color: #FAF3E0;
+        box-shadow: 0 0 15px rgba(250, 243, 224, 0.15);
     }
 
-    /* Animasi awan dan karakter */
     @keyframes float {
         0% { transform: translateY(0px); }
         50% { transform: translateY(-10px); }
@@ -106,7 +105,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown(
         """
-        <div style="color:#3B2F2F;">
+        <div style="color:#FAF3E0;">
             💡 <i>Unggah gambar Alpaca/Non-Alpaca untuk deteksi objek, atau furniture untuk klasifikasi.</i>
         </div>
         """,
@@ -116,7 +115,7 @@ with st.sidebar:
     st.write("📋 Deskripsi Singkat:")
     st.markdown(
         """
-        <p style="font-size:14px;">
+        <p style="font-size:14px; color:#FAF3E0;">
         Aplikasi ini dapat mendeteksi keberadaan <b>Alpaca</b> dalam gambar menggunakan model <i>YOLO</i>, 
         dan juga mengklasifikasikan jenis <b>furniture</b> (chair, table, nightstand, sofa, bed) menggunakan model deep learning berbasis CNN.
         </p>
@@ -167,7 +166,7 @@ if uploaded_file is not None:
 # ==========================
 st.markdown("""
 <hr>
-<div style="text-align:center; font-size:14px; color:#5A3E2B;">
+<div style="text-align:center; font-size:14px; color:#FAF3E0;">
 by <b>@naylarhmdn</b> | Smart Vision Project 🤎🦙
 </div>
 """, unsafe_allow_html=True)
